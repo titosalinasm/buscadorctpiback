@@ -1,0 +1,9 @@
+spring.datasource.ctpi.jndi-name: jdbc/JDBCappDINBuscadirCTPI
+spring.datasource.oin.jndi-name: jdbc/JDBCappDINBuscadirOIN
+ 
+   
+spring:
+  servlet:
+    multipart:
+      max-file-size: -1
+      max-request-size: -1
