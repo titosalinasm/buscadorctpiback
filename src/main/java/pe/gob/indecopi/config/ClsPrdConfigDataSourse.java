@@ -25,9 +25,9 @@ public class ClsPrdConfigDataSourse  implements Serializable{
 	  private static final long serialVersionUID = 1L;
 	 
 	  private final Logger LOGGER = LoggerFactory.getLogger(getClass());
-	  @Value("${spring.datasource.usr_marcas.jndi-name}")
+	  @Value("${spring.datasource.ctpi.jndi-name}")
 	  private String jndiName;
-	  @Value("${spring.datasource.usr_sel.jndi-name}")
+	  @Value("${spring.datasource.oin.jndi-name}")
 	  private String jndiName2;
 	  @Primary
 	  @Bean(destroyMethod="")
@@ -56,8 +56,8 @@ public class ClsPrdConfigDataSourse  implements Serializable{
 	  }
 	  
 	  @Bean(destroyMethod="")
-	  @Qualifier("dataSourceSEL")
-	  public DataSource dataSourceSEL()
+	  @Qualifier("dataSourceOIN")
+	  public DataSource dataSourceOIN()
 	  {
 	    DataSource dataSource = null;
 	    JndiTemplate jndi = new JndiTemplate();
@@ -74,8 +74,8 @@ public class ClsPrdConfigDataSourse  implements Serializable{
 	    return dataSource;
 	  }
 	  
-	  @Bean(name={"transactionManagerSEL"})
-	  DataSourceTransactionManager transactionManagerSEL(@Qualifier("dataSourceSEL") DataSource datasource)
+	  @Bean(name={"transactionManagerOIN"})
+	  DataSourceTransactionManager transactionManagerSEL(@Qualifier("dataSourceOIN") DataSource datasource)
 	  {
 	    return new DataSourceTransactionManager(datasource);
 	  }

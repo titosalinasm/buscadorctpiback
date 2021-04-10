@@ -8,7 +8,7 @@ public class ClsErrorResult implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -734303127991543550L;
-	private Long nuError;
+	private Integer nuError;
 	private String vcError;
 	public ClsErrorResult() {
 		// TODO Auto-generated constructor stub
@@ -16,13 +16,14 @@ public class ClsErrorResult implements Serializable {
 
 
 
-	public Long getNuError() {
+	public Integer getNuError() {
 		return nuError;
 	}
 
-	public void setNuError(Long nuError) {
+	public void setNuError(Integer nuError) {
 		this.nuError = nuError;
 	}
+
 
 	public String getVcError() {
 		return vcError;
