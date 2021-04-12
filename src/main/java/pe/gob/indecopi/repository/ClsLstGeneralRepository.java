@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import oracle.jdbc.OracleTypes;
 import pe.gob.indecopi.bean.ClsActividadBean;
+import pe.gob.indecopi.bean.ClsRecursoBean;
 import pe.gob.indecopi.param.ClsConstantes;
 import pe.gob.indecopi.util.ClsErrorResult;
 import pe.gob.indecopi.util.ClsResultDAO;
@@ -103,6 +104,54 @@ public class ClsLstGeneralRepository extends ClsErrorResult implements Serializa
 		return objResultDAO;
 	}
 	
+	@Override
+	public ClsResultDAO doLstRecurso(ClsRecursoBean objRecurso) {
+		logger.info("doLstRecurso()");
+		System.out.println("doLstRecurso()");
+		try {
+			//procedure
+			this.simpleJdbcCall=new SimpleJdbcCall(jdbcTemplate)
+									.withSchemaName(ClsConstantes.SCHEMA_CTPI)
+									.withCatalogName(ClsConstantes.PKG_BUSCADOR_CTPI)
+									.withProcedureName(ClsConstantes.SP_LST_NOMBRE_CIENTIFICO)
+									.declareParameters(	
+									new  SqlOutParameter("POUT_CUR_RECURSO", OracleTypes.CURSOR ,
+									new RowMapper<ClsRecursoBean>() {
+
+										@Override
+										public ClsRecursoBean mapRow(ResultSet rs, int rowNum)
+												throws SQLException {
+											ClsRecursoBean objRespuesta=new ClsRecursoBean();
+											objRespuesta.setNuIdRecurso(rs.getInt("NU_ID_RECURSOBIO"));
+											objRespuesta.setVcNombreCientifico(rs.getString("VC_NOMBRE_CIENTIFICO"));
+											//System.out.println("rs.getString(\"VC_NOMBRE_CIENTIFICO\")"+rs.getString("VC_NOMBRE_CIENTIFICO"));
+											return objRespuesta;
+										}
+									}),
+									new  SqlOutParameter("POUT_NU_ERROR", OracleTypes.NUMBER ,"NUMBER"),
+									new  SqlOutParameter("POUT_VC_ERROR", OracleTypes.VARCHAR ,"VARCHAR2")
+									);
+			//System.out.println("objRecurso.getVcNombreCientifico(): "+objRecurso.getVcNombreCientifico());
+			//param
+			SqlParameterSource inParamMap = new MapSqlParameterSource()
+											    .addValue("PIN_VC_PALABRA", objRecurso.getVcNombreCientifico());
+			//execute
+			Map<String, Object> out = this.simpleJdbcCall.execute(inParamMap);
+			
+			//response
+			objResultDAO.put("POUT_CUR_RECURSO", out.get("POUT_CUR_RECURSO"));
+			objResultDAO.put("POUT_NU_ERROR", out.get("POUT_NU_ERROR"));
+			objResultDAO.put("POUT_VC_ERROR", out.get("POUT_VC_ERROR"));
+											    		
+			
+		}catch(Exception e) {
+			System.out.println(e);
+			logger.info(e);
+			e.printStackTrace();
+		}
+		
+		return objResultDAO;
+	}
 	
 	
 	
