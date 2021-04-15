@@ -14,6 +14,8 @@ public class ClsConstantes implements Serializable{
 	public static final String SP_LST_GENERAL="SP_LST_GENERAL";
 	public static final String SP_LST_NOMBRE_CIENTIFICO="SP_LST_NOMBRE_CIENTIFICO";
 	public static final String SP_LST_TODOS_COLECCIONES="SP_LST_TODOS_COLECCIONES";
+	public static final String SP_LST_DET_CONOCIMIENTO="SP_LST_DET_CONOCIMIENTO";
+	public static final String SP_LST_DET_PATENTE="SP_LST_DET_PATENTE";
 	
 	
 	

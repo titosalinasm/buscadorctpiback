@@ -11,7 +11,8 @@ public class ClsRecursoBean implements Serializable{
 	
 	private Integer nuIdRecurso;
 	private String vcNombreCientifico;
-	
+	private String vcNombreComun;
+	private String vcNombreFamilia;
 	
 	public Integer getNuIdRecurso() {
 		return nuIdRecurso;
@@ -24,6 +25,18 @@ public class ClsRecursoBean implements Serializable{
 	}
 	public void setVcNombreCientifico(String vcNombreCientifico) {
 		this.vcNombreCientifico = vcNombreCientifico;
+	}
+	public String getVcNombreComun() {
+		return vcNombreComun;
+	}
+	public void setVcNombreComun(String vcNombreComun) {
+		this.vcNombreComun = vcNombreComun;
+	}
+	public String getVcNombreFamilia() {
+		return vcNombreFamilia;
+	}
+	public void setVcNombreFamilia(String vcNombreFamilia) {
+		this.vcNombreFamilia = vcNombreFamilia;
 	}
 	
 	

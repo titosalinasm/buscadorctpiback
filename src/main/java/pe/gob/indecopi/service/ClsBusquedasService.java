@@ -7,9 +7,18 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import pe.gob.indecopi.bean.ClsActividadBean;
+import pe.gob.indecopi.bean.ClsArchivoBean;
+import pe.gob.indecopi.bean.ClsBibliografiaBean;
+import pe.gob.indecopi.bean.ClsDatoPatenteBean;
+import pe.gob.indecopi.bean.ClsDescripcionBean;
+import pe.gob.indecopi.bean.ClsFilterDetRegistroBean;
 import pe.gob.indecopi.bean.ClsFiltroTodosColeccionesBean;
+import pe.gob.indecopi.bean.ClsRecursoBean;
 import pe.gob.indecopi.bean.ClsTodasColeccionesBean;
 import pe.gob.indecopi.repository.ClsBusquedasRepositoryI;
+import pe.gob.indecopi.result.ClsConocimientoResult;
+import pe.gob.indecopi.result.ClsPatenteResult;
 import pe.gob.indecopi.result.ClsTodasColeccionesResult;
 import pe.gob.indecopi.util.ClsResultDAO;
 
@@ -52,6 +61,58 @@ public class ClsBusquedasService implements Serializable, ClsBusquedasServiceI{
 		
 		return öbjResult;
 		
+	}
+	
+	@Override
+	public Object doDetalle(ClsFilterDetRegistroBean objFiltro) {
+		logger.info("doDetalle()");
+		ClsConocimientoResult öbjResult1=new ClsConocimientoResult();
+		ClsPatenteResult öbjResult2=new ClsPatenteResult();
+		
+		try {
+			System.out.println("getNuIdTipo: "+objFiltro.getNuIdTipo());
+
+			switch (objFiltro.getNuIdTipo()) {
+					case 1:
+						objResultDAO=objConn.doLstDetPatente(objFiltro);
+						öbjResult2.setLstDatosPatentes((List<ClsDatoPatenteBean>)objResultDAO.get("POUT_CUR_DATO_PATENTE"));
+						öbjResult2.setLstActividadRelacionada((List<ClsActividadBean>)objResultDAO.get("POUT_CUR_ACTIVIDAD"));
+						öbjResult2.setNuError(Integer.parseInt(objResultDAO.get("POUT_NU_ERROR")+""));
+						öbjResult2.setVcError((String)objResultDAO.get("POUT_VC_ERROR"));
+						break;
+					case 2:
+						objResultDAO=objConn.doLstDetConocimiento(objFiltro);
+						öbjResult1.setLstRecursoRelacionado((List<ClsRecursoBean>)objResultDAO.get("POUT_CUR_RECURSO"));
+						öbjResult1.setLstDescripcion((List<ClsDescripcionBean>)objResultDAO.get("POUT_CUR_DESCRIPCION"));
+						öbjResult1.setLstActividadRelacionada((List<ClsActividadBean>)objResultDAO.get("POUT_CUR_ACTIVIDADES"));
+						öbjResult1.setLstBibliografia((List<ClsBibliografiaBean>)objResultDAO.get("POUT_CUR_BIBLIOGRAFIA"));
+						öbjResult1.setLstArchivo((List<ClsArchivoBean>)objResultDAO.get("POUT_CUR_ARCHIVOS"));
+						öbjResult1.setNuError(Integer.parseInt(objResultDAO.get("POUT_NU_ERROR")+""));
+						öbjResult1.setVcError((String)objResultDAO.get("POUT_VC_ERROR"));
+						break;
+		
+					default:
+						
+						break;
+			}
+			
+			/*
+			öbjResult.setLstTodasColecciones((List<ClsTodasColeccionesBean>)objResultDAO.get("POUT_CUR_TODOS_COL"));
+		
+			öbjResult.setNuError(Integer.parseInt(objResultDAO.get("POUT_NU_ERROR")+""));
+			öbjResult.setVcError((String)objResultDAO.get("POUT_VC_ERROR"));
+			*/
+	
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.info(e);
+		}
+		
+		if(objFiltro.getNuIdTipo()==1) {
+			return öbjResult2;
+		}else {
+			return öbjResult1;
+		}
 	}
 
 }
