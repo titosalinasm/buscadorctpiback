@@ -13,6 +13,7 @@ public class ClsConstantes implements Serializable{
 	public static final String PKG_BUSCADOR_CTPI="PKG_BUSCADOR_CTPI";
 	public static final String SP_LST_GENERAL="SP_LST_GENERAL";
 	public static final String SP_LST_NOMBRE_CIENTIFICO="SP_LST_NOMBRE_CIENTIFICO";
+	public static final String SP_LST_TODOS_COLECCIONES="SP_LST_TODOS_COLECCIONES";
 	
 	
 	
