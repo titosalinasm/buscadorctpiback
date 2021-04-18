@@ -28,7 +28,7 @@ public class ClsLstGeneralController implements Serializable {
 	@Autowired
 	private ClsLstGeneralServiceI objConn;
 	
-	@RequestMapping(method = RequestMethod.POST, path = "/lstactividad", produces = "application/json")
+	@RequestMapping(method = RequestMethod.POST, path = "/lsttodos", produces = "application/json")
 	public @ResponseBody ResponseEntity<?> doLstGeneral() {
 		return ResponseEntity.ok().body(objConn.doLstGeneral()) ;
 	}

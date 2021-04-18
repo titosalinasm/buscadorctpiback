@@ -32,9 +32,14 @@ import pe.gob.indecopi.bean.ClsBibliografiaBean;
 import pe.gob.indecopi.bean.ClsDatoPatenteBean;
 import pe.gob.indecopi.bean.ClsDescripcionBean;
 import pe.gob.indecopi.bean.ClsFilterDetRegistroBean;
+import pe.gob.indecopi.bean.ClsFiltroConocimientosBean;
+import pe.gob.indecopi.bean.ClsFiltroPatentesBean;
+import pe.gob.indecopi.bean.ClsFiltroTodosAvanzadoBean;
 import pe.gob.indecopi.bean.ClsFiltroTodosColeccionesBean;
+import pe.gob.indecopi.bean.ClsOperadorBean;
 import pe.gob.indecopi.bean.ClsRecursoBean;
 import pe.gob.indecopi.bean.ClsTodasColeccionesBean;
+import pe.gob.indecopi.bean.ClsValorBean;
 import pe.gob.indecopi.param.ClsConstantes;
 import pe.gob.indecopi.util.ClsErrorResult;
 import pe.gob.indecopi.util.ClsResultDAO;
@@ -175,8 +180,8 @@ public class ClsBusquedasRepository  implements Serializable, ClsBusquedasReposi
 												public ClsActividadBean mapRow(ResultSet rs, int rowNum)
 														throws SQLException {
 													ClsActividadBean objRespuesta=new ClsActividadBean();
-													objRespuesta.setNuIdActividad(rs.getInt("VC_NOM_ESPANOL"));
-													objRespuesta.setVcActividad(rs.getString("VC_NOM_INGLES"));
+													objRespuesta.setNuIdActividad(rs.getInt("NU_ID_ACTIVIDAD"));
+													objRespuesta.setVcActividad(rs.getString("VC_ACTIVIDAD"));
 													return objRespuesta;
 												}
 											}),
@@ -311,4 +316,230 @@ public class ClsBusquedasRepository  implements Serializable, ClsBusquedasReposi
 		
 		return objResultDAO;
 	}
+
+	@Override
+	public ClsResultDAO doLstTodasAvanzado(ClsFiltroTodosAvanzadoBean objFiltro) {
+		logger.info("doLstTodasAvanzado()");
+		System.out.println("doLstTodasAvanzado()");
+		try {
+			
+			//procedure
+			this.simpleJdbcCall=new SimpleJdbcCall(jdbcTemplate)
+									.withSchemaName(ClsConstantes.SCHEMA_CTPI)
+									.withCatalogName(ClsConstantes.PKG_BUSCADOR_CTPI)
+									.withProcedureName(ClsConstantes.SP_LST_TODOS_AVANZADO)
+									.declareParameters(
+									new SqlParameter("PIN_ARR_NU_ID_ACTIVIDAD",			 OracleTypes.ARRAY,  "NUM_ARRAY"),
+									new SqlParameter("PIN_ARR_VC_VALORES",			 OracleTypes.ARRAY,  "STR_ARRAY"), 
+									new SqlParameter("PIN_ARR_VC_OPERADOR",			 OracleTypes.ARRAY,  "STR_ARRAY"), 
+									new  SqlOutParameter("POUT_CUR_TODOS_AVAN", OracleTypes.CURSOR ,
+									new RowMapper<ClsTodasColeccionesBean>() {
+										@Override
+										public ClsTodasColeccionesBean mapRow(ResultSet rs, int rowNum)
+												throws SQLException {
+											ClsTodasColeccionesBean objRespuesta=new ClsTodasColeccionesBean();
+											objRespuesta.setNuIdRegistro(rs.getInt("NU_REGISTRO"));
+											objRespuesta.setNuIdTipoRegistro(rs.getInt("NU_TIPO_REGISTRO"));
+											objRespuesta.setVcFuente(rs.getString("VC_FUENTE"));
+											objRespuesta.setVcRecurso(rs.getString("VC_RECURSO"));
+											objRespuesta.setVcActividad(rs.getString("VC_ACTIVIDAD"));
+											objRespuesta.setVcColumna3(rs.getString("VC_COLUM3"));
+											objRespuesta.setVcNumero(rs.getString("VC_NUMERO"));
+											objRespuesta.setVcFecha(rs.getString("VC_FECHA"));
+											objRespuesta.setVcResumen(rs.getString("VC_RESUMEN"));
+											return objRespuesta;
+										}
+									}),
+									new  SqlOutParameter("POUT_NU_ERROR", OracleTypes.NUMBER ,"NUMBER"),
+									new  SqlOutParameter("POUT_VC_ERROR", OracleTypes.VARCHAR ,"VARCHAR2")
+									);
+			
+			int nuTamnio=objFiltro.getLstActividad().size();
+			Integer[] nuIdActividad= new Integer[nuTamnio];
+			for(int i=0; i<nuTamnio; i++) {
+				ClsActividadBean objActividad=objFiltro.getLstActividad().get(i);
+				nuIdActividad[i]=objActividad.getNuIdActividad();
+			}
+			
+			nuTamnio=objFiltro.getLstOperador().size();
+			String[] vcOperador= new String[nuTamnio];
+			for(int i=0; i<nuTamnio; i++) {
+				ClsOperadorBean obj=objFiltro.getLstOperador().get(i);
+				vcOperador[i]=obj.getVcOperador();
+			}
+			
+			nuTamnio=objFiltro.getLstValor().size();
+			String[] vcValor= new String[nuTamnio];
+			for(int i=0; i<nuTamnio; i++) {
+				ClsValorBean obj=objFiltro.getLstValor().get(i);
+				vcValor[i]=obj.getVcValor();
+			}
+			
+			System.out.println("objFiltro.getVcNombreCientifico(): "+objFiltro.getVcNombreCientifico());
+	
+			 Map<String, Object> inParamMap = new HashMap();
+			 inParamMap.put("PIN_VC_NOM_CIENTIFICO", objFiltro.getVcNombreCientifico());
+			 inParamMap.put("PIN_ARR_NU_ID_ACTIVIDAD"	, new SqlArrayValue<Integer>(nuIdActividad, "NUM_ARRAY"));
+			 inParamMap.put("PIN_ARR_VC_VALORES"	, new SqlArrayValue<String>(vcValor, "STR_ARRAY"));
+			 inParamMap.put("PIN_ARR_VC_OPERADOR"	, new SqlArrayValue<String>(vcOperador, "STR_ARRAY"));
+			//execute
+			Map<String, Object> out = this.simpleJdbcCall.execute(inParamMap);
+			
+			//response
+			objResultDAO.put("POUT_CUR_TODOS_AVAN", out.get("POUT_CUR_TODOS_AVAN"));
+			objResultDAO.put("POUT_NU_ERROR", out.get("POUT_NU_ERROR"));
+			objResultDAO.put("POUT_VC_ERROR", out.get("POUT_VC_ERROR"));
+											    		
+	
+		}catch(Exception e) {
+			System.out.println(e);
+			logger.info(e);
+			e.printStackTrace();
+		}
+		
+		return objResultDAO;
+	}
+	
+	@Override
+	public ClsResultDAO doLstPatentes(ClsFiltroPatentesBean objFiltro) {
+		logger.info("doLstPatentes()");
+		System.out.println("doLstPatentes()");
+		try {
+			
+			//procedure
+			this.simpleJdbcCall=new SimpleJdbcCall(jdbcTemplate)
+									.withSchemaName(ClsConstantes.SCHEMA_CTPI)
+									.withCatalogName(ClsConstantes.PKG_BUSCADOR_CTPI)
+									.withProcedureName(ClsConstantes.SP_LST_PATENTES)
+									.declareParameters(
+									new SqlParameter("PIN_ARR_NU_ID_ACTIVIDAD",			 OracleTypes.ARRAY,  "NUM_ARRAY"), 	
+									new  SqlOutParameter("POUT_CUR_PATENTE", OracleTypes.CURSOR ,
+									new RowMapper<ClsTodasColeccionesBean>() {
+										@Override
+										public ClsTodasColeccionesBean mapRow(ResultSet rs, int rowNum)
+												throws SQLException {
+											ClsTodasColeccionesBean objRespuesta=new ClsTodasColeccionesBean();
+											objRespuesta.setNuIdRegistro(rs.getInt("NU_REGISTRO"));
+											objRespuesta.setNuIdTipoRegistro(rs.getInt("NU_TIPO_REGISTRO"));
+											objRespuesta.setVcFuente(rs.getString("VC_FUENTE"));
+											objRespuesta.setVcRecurso(rs.getString("VC_RECURSO"));
+											objRespuesta.setVcActividad(rs.getString("VC_ACTIVIDAD"));
+											objRespuesta.setVcColumna3(rs.getString("VC_COLUM3"));
+											objRespuesta.setVcNumero(rs.getString("VC_NUMERO"));
+											objRespuesta.setVcFecha(rs.getString("VC_FECHA"));
+											objRespuesta.setVcResumen(rs.getString("VC_RESUMEN"));
+											return objRespuesta;
+										}
+									}),
+									new  SqlOutParameter("POUT_NU_ERROR", OracleTypes.NUMBER ,"NUMBER"),
+									new  SqlOutParameter("POUT_VC_ERROR", OracleTypes.VARCHAR ,"VARCHAR2")
+									);
+			
+			int nuTamnio=objFiltro.getLstActividad().size();
+			Integer[] nuIdActividad= new Integer[nuTamnio];
+			for(int i=0; i<nuTamnio; i++) {
+				ClsActividadBean objActividad=objFiltro.getLstActividad().get(i);
+				nuIdActividad[i]=objActividad.getNuIdActividad();
+			}
+			
+			System.out.println("objFiltro.getVcNombreCientifico(): "+objFiltro.getVcNombreCientifico());
+	
+			 Map<String, Object> inParamMap = new HashMap();
+			 inParamMap.put("PIN_VC_NOM_CIENTIFICO", objFiltro.getVcNombreCientifico());
+			 inParamMap.put("PIN_VC_RESUMEN", objFiltro.getVcResumen());
+			 inParamMap.put("PIN_VC_TITULO_PATENTE", objFiltro.getVcTituloPatente());
+			 inParamMap.put("PIN_VC_NUMERO_PUBLICACION", objFiltro.getVcNumeroPublicacion());
+			 inParamMap.put("PIN_VC_REIVINDICACION", objFiltro.getVcReinvindicacion());
+			 inParamMap.put("PIN_VC_CIP", objFiltro.getVcCip());
+			 
+			 inParamMap.put("PIN_ARR_NU_ID_ACTIVIDAD"	, new SqlArrayValue<Integer>(nuIdActividad, "NUM_ARRAY"));
+			//execute
+			Map<String, Object> out = this.simpleJdbcCall.execute(inParamMap);
+			
+			//response
+			objResultDAO.put("POUT_CUR_PATENTE", out.get("POUT_CUR_PATENTE"));
+			objResultDAO.put("POUT_NU_ERROR", out.get("POUT_NU_ERROR"));
+			objResultDAO.put("POUT_VC_ERROR", out.get("POUT_VC_ERROR"));
+											    		
+	
+		}catch(Exception e) {
+			System.out.println(e);
+			logger.info(e);
+			e.printStackTrace();
+		}
+		
+		return objResultDAO;
+	}
+	
+	@Override
+	public ClsResultDAO doLstConocimientos(ClsFiltroConocimientosBean objFiltro) {
+		logger.info("doLstConocimientos()");
+		System.out.println("doLstConocimientos()");
+		try {
+			
+			//procedure
+			this.simpleJdbcCall=new SimpleJdbcCall(jdbcTemplate)
+									.withSchemaName(ClsConstantes.SCHEMA_CTPI)
+									.withCatalogName(ClsConstantes.PKG_BUSCADOR_CTPI)
+									.withProcedureName(ClsConstantes.SP_LST_CONOCIMIENTO)
+									.declareParameters(
+									new SqlParameter("PIN_ARR_NU_ID_ACTIVIDAD",			 OracleTypes.ARRAY,  "NUM_ARRAY"), 	
+									new  SqlOutParameter("POUT_CUR_CONOCIMIENTO", OracleTypes.CURSOR ,
+									new RowMapper<ClsTodasColeccionesBean>() {
+										@Override
+										public ClsTodasColeccionesBean mapRow(ResultSet rs, int rowNum)
+												throws SQLException {
+											ClsTodasColeccionesBean objRespuesta=new ClsTodasColeccionesBean();
+											objRespuesta.setNuIdRegistro(rs.getInt("NU_REGISTRO"));
+											objRespuesta.setNuIdTipoRegistro(rs.getInt("NU_TIPO_REGISTRO"));
+											objRespuesta.setVcFuente(rs.getString("VC_FUENTE"));
+											objRespuesta.setVcRecurso(rs.getString("VC_RECURSO"));
+											objRespuesta.setVcActividad(rs.getString("VC_ACTIVIDAD"));
+											objRespuesta.setVcColumna3(rs.getString("VC_COLUM3"));
+											objRespuesta.setVcNumero(rs.getString("VC_NUMERO"));
+											objRespuesta.setVcFecha(rs.getString("VC_FECHA"));
+											objRespuesta.setVcResumen(rs.getString("VC_RESUMEN"));
+											return objRespuesta;
+										}
+									}),
+									new  SqlOutParameter("POUT_NU_ERROR", OracleTypes.NUMBER ,"NUMBER"),
+									new  SqlOutParameter("POUT_VC_ERROR", OracleTypes.VARCHAR ,"VARCHAR2")
+									);
+			
+			int nuTamnio=objFiltro.getLstActividad().size();
+			Integer[] nuIdActividad= new Integer[nuTamnio];
+			for(int i=0; i<nuTamnio; i++) {
+				ClsActividadBean objActividad=objFiltro.getLstActividad().get(i);
+				nuIdActividad[i]=objActividad.getNuIdActividad();
+			}
+			
+			System.out.println("objFiltro.getVcNombreCientifico(): "+objFiltro.getVcNombreCientifico());
+	
+			 Map<String, Object> inParamMap = new HashMap();
+			 inParamMap.put("PIN_VC_NOM_CIENTIFICO", objFiltro.getVcNombreCientifico());
+			 inParamMap.put("PIN_NU_TIPO_CONOCIMIENTO", objFiltro.getNuIdTipoConocimiento());
+			 inParamMap.put("PIN_VC_DESCRIPCION", objFiltro.getVcDescripcion());
+			 inParamMap.put("PIN_VC_NOMBRE_COMUN", objFiltro.getVcNombreComun());
+			 inParamMap.put("PIN_NU_TIPO_BIBLIOGRAFIA", objFiltro.getNuIdTipoBibliografia());
+			 inParamMap.put("PIN_NU_PUEBLO", objFiltro.getNuIdPueblo());
+			 
+			 inParamMap.put("PIN_ARR_NU_ID_ACTIVIDAD"	, new SqlArrayValue<Integer>(nuIdActividad, "NUM_ARRAY"));
+			//execute
+			Map<String, Object> out = this.simpleJdbcCall.execute(inParamMap);
+			
+			//response
+			objResultDAO.put("POUT_CUR_CONOCIMIENTO", out.get("POUT_CUR_CONOCIMIENTO"));
+			objResultDAO.put("POUT_NU_ERROR", out.get("POUT_NU_ERROR"));
+			objResultDAO.put("POUT_VC_ERROR", out.get("POUT_VC_ERROR"));
+											    		
+	
+		}catch(Exception e) {
+			System.out.println(e);
+			logger.info(e);
+			e.printStackTrace();
+		}
+		
+		return objResultDAO;
+	}
+	
 }

@@ -8,7 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pe.gob.indecopi.bean.ClsActividadBean;
+import pe.gob.indecopi.bean.ClsPuebloBean;
 import pe.gob.indecopi.bean.ClsRecursoBean;
+import pe.gob.indecopi.bean.ClsTipoBibliografiaBean;
+import pe.gob.indecopi.bean.ClsTipoConocimientoBean;
 import pe.gob.indecopi.repository.ClsLstGeneralRepositoryI;
 import pe.gob.indecopi.result.ClsLstGeneralResult;
 import pe.gob.indecopi.result.ClsRecursoResult;
@@ -41,6 +44,7 @@ public class ClsLstGeneralService implements Serializable, ClsLstGeneralServiceI
 			objResultDAO=objlstGeneralRepo.doLstRecurso(objRecurso);
 			
 			öbjResult.setLsRecurso((List<ClsRecursoBean>)objResultDAO.get("POUT_CUR_RECURSO"));
+
 			
 			öbjResult.setNuError(Integer.parseInt(objResultDAO.get("POUT_NU_ERROR")+""));
 			öbjResult.setVcError((String)objResultDAO.get("POUT_VC_ERROR"));
@@ -64,6 +68,9 @@ public class ClsLstGeneralService implements Serializable, ClsLstGeneralServiceI
 			objResultDAO=objlstGeneralRepo.doLstGeneral();
 			
 			öbjResult.setLstActividad((List<ClsActividadBean>)objResultDAO.get("POUT_CUR_ACTIVIDAD"));
+			öbjResult.setLstPueblo((List<ClsPuebloBean>)objResultDAO.get("POUT_CUR_PUEBLO"));
+			öbjResult.setLstTipoBibliografia((List<ClsTipoBibliografiaBean>)objResultDAO.get("POUT_CUR_TIPO_BIBLIOGRAFIA"));
+			öbjResult.setLstTipoConocimiento((List<ClsTipoConocimientoBean>)objResultDAO.get("POUT_CUR_TIPO_CONOCIMIENTO"));
 			
 			öbjResult.setNuError(Integer.parseInt(objResultDAO.get("POUT_NU_ERROR")+""));
 			öbjResult.setVcError((String)objResultDAO.get("POUT_VC_ERROR"));

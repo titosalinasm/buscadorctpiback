@@ -13,6 +13,9 @@ import pe.gob.indecopi.bean.ClsBibliografiaBean;
 import pe.gob.indecopi.bean.ClsDatoPatenteBean;
 import pe.gob.indecopi.bean.ClsDescripcionBean;
 import pe.gob.indecopi.bean.ClsFilterDetRegistroBean;
+import pe.gob.indecopi.bean.ClsFiltroConocimientosBean;
+import pe.gob.indecopi.bean.ClsFiltroPatentesBean;
+import pe.gob.indecopi.bean.ClsFiltroTodosAvanzadoBean;
 import pe.gob.indecopi.bean.ClsFiltroTodosColeccionesBean;
 import pe.gob.indecopi.bean.ClsRecursoBean;
 import pe.gob.indecopi.bean.ClsTodasColeccionesBean;
@@ -77,6 +80,7 @@ public class ClsBusquedasService implements Serializable, ClsBusquedasServiceI{
 						objResultDAO=objConn.doLstDetPatente(objFiltro);
 						öbjResult2.setLstDatosPatentes((List<ClsDatoPatenteBean>)objResultDAO.get("POUT_CUR_DATO_PATENTE"));
 						öbjResult2.setLstActividadRelacionada((List<ClsActividadBean>)objResultDAO.get("POUT_CUR_ACTIVIDAD"));
+						
 						öbjResult2.setNuError(Integer.parseInt(objResultDAO.get("POUT_NU_ERROR")+""));
 						öbjResult2.setVcError((String)objResultDAO.get("POUT_VC_ERROR"));
 						break;
@@ -87,21 +91,14 @@ public class ClsBusquedasService implements Serializable, ClsBusquedasServiceI{
 						öbjResult1.setLstActividadRelacionada((List<ClsActividadBean>)objResultDAO.get("POUT_CUR_ACTIVIDADES"));
 						öbjResult1.setLstBibliografia((List<ClsBibliografiaBean>)objResultDAO.get("POUT_CUR_BIBLIOGRAFIA"));
 						öbjResult1.setLstArchivo((List<ClsArchivoBean>)objResultDAO.get("POUT_CUR_ARCHIVOS"));
+						
 						öbjResult1.setNuError(Integer.parseInt(objResultDAO.get("POUT_NU_ERROR")+""));
 						öbjResult1.setVcError((String)objResultDAO.get("POUT_VC_ERROR"));
 						break;
-		
 					default:
-						
 						break;
 			}
 			
-			/*
-			öbjResult.setLstTodasColecciones((List<ClsTodasColeccionesBean>)objResultDAO.get("POUT_CUR_TODOS_COL"));
-		
-			öbjResult.setNuError(Integer.parseInt(objResultDAO.get("POUT_NU_ERROR")+""));
-			öbjResult.setVcError((String)objResultDAO.get("POUT_VC_ERROR"));
-			*/
 	
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -115,4 +112,72 @@ public class ClsBusquedasService implements Serializable, ClsBusquedasServiceI{
 		}
 	}
 
+	@Override
+	public ClsTodasColeccionesResult doLstTodosAvanzado(ClsFiltroTodosAvanzadoBean objFiltro) {
+		logger.info("doLstTodosAvanzado()");
+		ClsTodasColeccionesResult öbjResult=new ClsTodasColeccionesResult();
+		
+		try {
+			System.out.println("objFiltro."+objFiltro.getVcNombreCientifico());
+			objResultDAO=objConn.doLstTodasAvanzado(objFiltro);
+
+			öbjResult.setLstTodasColecciones((List<ClsTodasColeccionesBean>)objResultDAO.get("POUT_CUR_TODOS_AVAN"));
+			
+			öbjResult.setNuError(Integer.parseInt(objResultDAO.get("POUT_NU_ERROR")+""));
+			öbjResult.setVcError((String)objResultDAO.get("POUT_VC_ERROR"));
+	
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.info(e);
+		}
+		
+		return öbjResult;
+		
+	}
+	
+	@Override
+	public ClsTodasColeccionesResult doLstPatentes(ClsFiltroPatentesBean objFiltro) {
+		logger.info("doLstPatentes()");
+		ClsTodasColeccionesResult öbjResult=new ClsTodasColeccionesResult();
+		
+		try {
+			System.out.println("objFiltro."+objFiltro.getVcNombreCientifico());
+			objResultDAO=objConn.doLstPatentes(objFiltro);
+
+			öbjResult.setLstTodasColecciones((List<ClsTodasColeccionesBean>)objResultDAO.get("POUT_CUR_PATENTE"));
+			
+			öbjResult.setNuError(Integer.parseInt(objResultDAO.get("POUT_NU_ERROR")+""));
+			öbjResult.setVcError((String)objResultDAO.get("POUT_VC_ERROR"));
+	
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.info(e);
+		}
+		
+		return öbjResult;
+		
+	}
+	
+	@Override
+	public ClsTodasColeccionesResult doLstConocimientos(ClsFiltroConocimientosBean objFiltro) {
+		logger.info("doLstConocimientos()");
+		ClsTodasColeccionesResult öbjResult=new ClsTodasColeccionesResult();
+		
+		try {
+			System.out.println("objFiltro."+objFiltro.getVcNombreCientifico());
+			objResultDAO=objConn.doLstConocimientos(objFiltro);
+
+			öbjResult.setLstTodasColecciones((List<ClsTodasColeccionesBean>)objResultDAO.get("POUT_CUR_CONOCIMIENTO"));
+			
+			öbjResult.setNuError(Integer.parseInt(objResultDAO.get("POUT_NU_ERROR")+""));
+			öbjResult.setVcError((String)objResultDAO.get("POUT_VC_ERROR"));
+	
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.info(e);
+		}
+		
+		return öbjResult;
+		
+	}
 }

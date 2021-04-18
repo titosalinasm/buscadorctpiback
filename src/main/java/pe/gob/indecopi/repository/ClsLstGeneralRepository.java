@@ -24,7 +24,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import oracle.jdbc.OracleTypes;
 import pe.gob.indecopi.bean.ClsActividadBean;
+import pe.gob.indecopi.bean.ClsPuebloBean;
 import pe.gob.indecopi.bean.ClsRecursoBean;
+import pe.gob.indecopi.bean.ClsTipoBibliografiaBean;
+import pe.gob.indecopi.bean.ClsTipoConocimientoBean;
 import pe.gob.indecopi.param.ClsConstantes;
 import pe.gob.indecopi.util.ClsErrorResult;
 import pe.gob.indecopi.util.ClsResultDAO;
@@ -83,6 +86,46 @@ public class ClsLstGeneralRepository extends ClsErrorResult implements Serializa
 											return objRespuesta;
 										}
 									}),
+									new  SqlOutParameter("POUT_CUR_PUEBLO", OracleTypes.CURSOR ,
+											new RowMapper<ClsPuebloBean>() {
+
+												@Override
+												public ClsPuebloBean mapRow(ResultSet rs, int rowNum)
+														throws SQLException {
+													ClsPuebloBean objRespuesta=new ClsPuebloBean();
+													objRespuesta.setNuIdPueblo(rs.getInt("NU_ID_PUEBLO"));
+													objRespuesta.setVcPueblo(rs.getString("VC_PUEBLO"));
+													
+													return objRespuesta;
+												}
+											}),
+									new  SqlOutParameter("POUT_CUR_TIPO_BIBLIOGRAFIA", OracleTypes.CURSOR ,
+											new RowMapper<ClsTipoBibliografiaBean>() {
+
+												@Override
+												public ClsTipoBibliografiaBean mapRow(ResultSet rs, int rowNum)
+														throws SQLException {
+													ClsTipoBibliografiaBean objRespuesta=new ClsTipoBibliografiaBean();
+													objRespuesta.setNuIdTipoBibliografia(rs.getInt("NU_ID_TIPO"));
+													objRespuesta.setVcTipoBibliografia(rs.getString("VC_DESCRIPCION"));
+													
+													return objRespuesta;
+												}
+											}),
+									new  SqlOutParameter("POUT_CUR_TIPO_CONOCIMIENTO", OracleTypes.CURSOR ,
+											new RowMapper<ClsTipoConocimientoBean>() {
+
+												@Override
+												public ClsTipoConocimientoBean mapRow(ResultSet rs, int rowNum)
+														throws SQLException {
+													ClsTipoConocimientoBean objRespuesta=new ClsTipoConocimientoBean();
+													objRespuesta.setNuIdTipoConocimiento(rs.getInt("NU_COD_PARAMETRO"));
+													objRespuesta.setVcIdTipoConocimiento(rs.getString("VC_DESC_PARAMETRO"));
+													
+													return objRespuesta;
+												}
+											}),
+									
 									new  SqlOutParameter("POUT_NU_ERROR", OracleTypes.NUMBER ,"NUMBER"),
 									new  SqlOutParameter("POUT_VC_ERROR", OracleTypes.VARCHAR ,"VARCHAR2")
 									);
@@ -91,6 +134,10 @@ public class ClsLstGeneralRepository extends ClsErrorResult implements Serializa
 			
 			//response
 			objResultDAO.put("POUT_CUR_ACTIVIDAD", out.get("POUT_CUR_ACTIVIDAD"));
+			objResultDAO.put("POUT_CUR_PUEBLO", out.get("POUT_CUR_PUEBLO"));
+			objResultDAO.put("POUT_CUR_TIPO_BIBLIOGRAFIA", out.get("POUT_CUR_TIPO_BIBLIOGRAFIA"));
+			objResultDAO.put("POUT_CUR_TIPO_CONOCIMIENTO", out.get("POUT_CUR_TIPO_CONOCIMIENTO"));
+			
 			objResultDAO.put("POUT_NU_ERROR", out.get("POUT_NU_ERROR"));
 			objResultDAO.put("POUT_VC_ERROR", out.get("POUT_VC_ERROR"));
 											    		
