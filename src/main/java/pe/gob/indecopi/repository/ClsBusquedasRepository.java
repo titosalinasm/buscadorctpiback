@@ -428,6 +428,13 @@ public class ClsBusquedasRepository  implements Serializable, ClsBusquedasReposi
 											objRespuesta.setVcNumero(rs.getString("VC_NUMERO"));
 											objRespuesta.setVcFecha(rs.getString("VC_FECHA"));
 											objRespuesta.setVcResumen(rs.getString("VC_RESUMEN"));
+											
+											//patentes
+											objRespuesta.setVcTituloOriginal(rs.getString("VC_TITULO_ORIGINAL"));
+											objRespuesta.setVcNroPublicacion(rs.getString("VC_NUMERO_PUBLICACION"));
+											objRespuesta.setVcFechaPublicacion(rs.getString("VC_FECHA_PUBLICACION"));
+											
+											
 											return objRespuesta;
 										}
 									}),
@@ -499,6 +506,14 @@ public class ClsBusquedasRepository  implements Serializable, ClsBusquedasReposi
 											objRespuesta.setVcNumero(rs.getString("VC_NUMERO"));
 											objRespuesta.setVcFecha(rs.getString("VC_FECHA"));
 											objRespuesta.setVcResumen(rs.getString("VC_RESUMEN"));
+											
+											objRespuesta.setVcAutor(rs.getString("VC_AUTOR"));
+											objRespuesta.setVcLugarPublicacion(rs.getString("VC_LUGAR_PUB"));
+											objRespuesta.setVcFecha(rs.getString("VC_FECHA_PUB"));
+											objRespuesta.setNuPaginas(rs.getInt("NU_PAGINAS"));
+											objRespuesta.setVcRevista(rs.getString("VC_REVISTA"));
+											objRespuesta.setVcTituloArticulo(rs.getString("VC_TITULO_ARTICULO"));
+											objRespuesta.setVcTipoBibliografia(rs.getString("VC_TIPO_BIBLIOGRAFIA"));
 											return objRespuesta;
 										}
 									}),
